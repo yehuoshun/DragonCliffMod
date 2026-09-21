@@ -26,7 +26,7 @@ namespace DragonCliffMod
 
             try
             {
-                var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
+                var harmony = new HarmonyLib.Harmony(MyPluginInfo.PLUGIN_GUID);
                 harmony.PatchAll(typeof(Plugin).Assembly);
                 Logger.LogInfo("Harmony patch 全部注册完成");
             }

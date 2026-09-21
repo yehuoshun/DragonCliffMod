@@ -17,16 +17,14 @@
   <ItemGroup>
     <!-- 让 dotnet build 在没有装 .NET Framework 3.5 开发包时也能编译 net35 -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <!-- HarmonyX 用 NuGet（编译期 API 明确，运行时由 BepInEx core 提供 0Harmony） -->
+    <PackageReference Include="HarmonyX" Version="2.16.0" />
   </ItemGroup>
 
   <!-- BepInEx 核心（引用游戏目录自带，版本绝对匹配运行时） -->
   <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>$(DragonCliffDir)\BepInEx\core\BepInEx.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(DragonCliffDir)\BepInEx\core\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
