@@ -30,11 +30,9 @@ cd DragonCliffMod
 dotnet build -c Release
 ```
 
-### 3. 部署
+### 3. 部署（自动）
 
-```bash
-copy bin\Release\net35\DragonCliffMod.dll "Dragon Cliff\BepInEx\plugins\"
-```
+`dotnet build` 后会**自动复制** `DragonCliffMod.dll` 到 `BepInEx/plugins/`，无需手动 copy。
 
 ### 4. 启动游戏
 

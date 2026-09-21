@@ -57,4 +57,10 @@
     </Reference>
   </ItemGroup>
 
+  <!-- 编译后自动复制到 BepInEx plugins 目录 -->
+  <Target Name="CopyToBepInEx" AfterTargets="Build">
+    <Message Importance="high" Text="[DragonCliffMod] 复制 $(TargetFileName) → $(DragonCliffDir)\BepInEx\plugins\" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(DragonCliffDir)\BepInEx\plugins\" />
+  </Target>
+
 </Project>
