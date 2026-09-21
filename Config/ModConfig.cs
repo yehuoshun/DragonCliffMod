@@ -25,6 +25,10 @@ namespace DragonCliffMod
         // ─── 技能/等级 ──────────────────────────────────────
         public static ConfigEntry<int>   LevelCapOverride    { get; private set; }
 
+        // ─── 招募 ────────────────────────────────────────────
+        public static ConfigEntry<bool>  ForceStarAdventurer { get; private set; }
+        public static ConfigEntry<bool>  FullTalentAdventurer { get; private set; }
+
         /// <summary>
         /// 在 Plugin.Awake() 中调用，绑定所有配置项。
         /// </summary>
@@ -42,6 +46,9 @@ namespace DragonCliffMod
             NoUpgradeCap        = config.Bind("强化", "取消等级上限", false, "取消强化等级上限（原版100级）");
 
             LevelCapOverride    = config.Bind("技能", "等级上限覆盖", 0,     "英雄等级上限（0=原版90级，需反编译 firstpass）");
+
+            ForceStarAdventurer = config.Bind("招募", "星辰冒险者", false, "酒馆必出星辰冒险者");
+            FullTalentAdventurer = config.Bind("招募", "满天赋",     false, "招募的冒险者天赋点满(17点)");
         }
     }
 }
