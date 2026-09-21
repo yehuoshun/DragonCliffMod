@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -24,15 +26,44 @@ namespace DragonCliffMod
             // 绑定配置项（自动生成 BepInEx/config/yehuoshun.DragonCliffMod.cfg）
             ModConfig.Initialize(Config);
 
+            // 反射修改游戏里的 static readonly 字段（如宝石等级上限）
+            ApplyStaticOverrides();
+
             try
             {
                 var harmony = new HarmonyLib.Harmony(MyPluginInfo.PLUGIN_GUID);
                 harmony.PatchAll(typeof(Plugin).Assembly);
                 Logger.LogInfo("Harmony patch 全部注册完成");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError("Harmony patch 注册失败: " + ex);
+            }
+        }
+
+        /// <summary>
+        /// 用反射修改游戏里无法通过 Harmony 直接改的 static readonly 字段。
+        /// </summary>
+        private static void ApplyStaticOverrides()
+        {
+            // 宝石等级上限：ItemExtensions.MaxGemLevel = 25 → 自定义
+            int maxGem = ModConfig.GemMaxLevel.Value;
+            if (maxGem > 0)
+            {
+                try
+                {
+                    FieldInfo f = typeof(ItemExtensions).GetField("MaxGemLevel",
+                        BindingFlags.Public | BindingFlags.Static);
+                    if (f != null)
+                    {
+                        f.SetValue(null, maxGem);
+                        Logger.LogInfo("宝石等级上限已改为 " + maxGem);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("修改 MaxGemLevel 失败: " + ex);
+                }
             }
         }
     }

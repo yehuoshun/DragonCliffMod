@@ -4,54 +4,57 @@ using HarmonyLib;
 namespace DragonCliffMod.Patches
 {
     /// <summary>
-    /// 强化相关 Harmony patch 示例。
-    /// 用法同 EquipmentPatch：反编译确认真实类名后启用。
+    /// 强化相关 Harmony patch（已对接真实反编译方法）。
     /// </summary>
     public static class EnhancementPatch
     {
-#if false
         // ─── 免费强化 ────────────────────────────────────────────
-        // 目标：强化素材需求改为 0
-        [HarmonyPatch(typeof(ItemExtensions), "AmountRequired")]
-        [HarmonyPrefix]
-        static bool FreeUpgrade(ref int __result)
+        // Item.TeamSetUpgradeRequirements() → List&lt;ResourceConsumptionRequirement&gt;
+        // 清空素材需求列表，MetRequirements() 对空集合返回 true → 免费
+        [HarmonyPatch(typeof(Item), "TeamSetUpgradeRequirements")]
+        [HarmonyPostfix]
+        static void FreeUpgrade(ref List<ResourceConsumptionRequirement> __result)
         {
-            if (!ModConfig.FreeUpgrade.Value) return true;
-            __result = 0;
-            return false;
+            if (!ModConfig.FreeUpgrade.Value) return;
+            __result = new List<ResourceConsumptionRequirement>();
         }
 
         // ─── 强化成功率 ──────────────────────────────────────────
-        // 目标：成功率乘以配置倍率
-        [HarmonyPatch(typeof(TeamSetUpgradeRequirements), "GetTeamSetUpgradeSuccessChance")]
+        // Item.GetTeamSetUpgradeSuccessChance() → double
+        // 原逻辑: (100 - 强化印记长度)/100，最低 0.5
+        [HarmonyPatch(typeof(Item), "GetTeamSetUpgradeSuccessChance")]
         [HarmonyPostfix]
-        static void ScaleSuccessRate(ref float __result)
+        static void ScaleSuccessRate(ref double __result)
         {
             float mult = ModConfig.UpgradeSuccessRate.Value;
             if (mult.Approx(1.0f)) return;
             __result *= mult;
+            if (__result > 1.0) __result = 1.0;
         }
 
         // ─── 取消强化等级上限 ────────────────────────────────────
-        // 目标：强化等级上限判定永远为 true
-        [HarmonyPatch(typeof(TeamSetUpgradeRequirements), "CanTeamSetUpgrade")]
+        // Item.CanTeamSetUpgrade() → bool，原逻辑含 Level < 100
+        // Postfix 重新判断：去掉 Level 上限，只要护身符 + 素材满足即可
+        [HarmonyPatch(typeof(Item), "CanTeamSetUpgrade")]
         [HarmonyPostfix]
-        static void RemoveUpgradeCap(ref bool __result)
+        static void RemoveUpgradeCap(Item __instance, ref bool __result)
         {
             if (!ModConfig.NoUpgradeCap.Value) return;
-            __result = true;
+            if (__result) return; // 原方法已 true，不改
+            __result = __instance.Type.GetResourceCategory() == ResourceCategory.Amulet
+                       && __instance.TeamSetUpgradeRequirements().MetRequirements();
         }
 
-        // ─── 饰品/套装强化素材需求 ───────────────────────────────
-        // 目标：免费强化时清空素材列表
-        [HarmonyPatch(typeof(TeamSetUpgradeRequirements), "GetTeamSetUpgradeRequirements")]
-        [HarmonyPrefix]
-        static bool FreeTeamSetUpgrade(ref List<ItemAmount> __result)
+        // ─── 打孔上限 ────────────────────────────────────────────
+        // Item.CanAddMoreManualSockets() → bool
+        // 原逻辑：武器 <4 孔，护甲 <3 孔；改为配置值
+        [HarmonyPatch(typeof(Item), "CanAddMoreManualSockets")]
+        [HarmonyPostfix]
+        static void MaxSockets(Item __instance, ref bool __result)
         {
-            if (!ModConfig.FreeUpgrade.Value) return true;
-            __result = new List<ItemAmount>();
-            return false;
+            int max = ModConfig.MaxSockets.Value;
+            if (max <= 0) return;
+            __result = __instance.Sockets.Count < max;
         }
-#endif
     }
 }

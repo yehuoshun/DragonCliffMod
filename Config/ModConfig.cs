@@ -14,8 +14,8 @@ namespace DragonCliffMod
         public static ConfigEntry<int>   MaxSockets          { get; private set; }
 
         // ─── 宝石 ────────────────────────────────────────────
-        public static ConfigEntry<int>   GemLevelOverride    { get; private set; }
         public static ConfigEntry<float> GemStatMultiplier   { get; private set; }
+        public static ConfigEntry<int>   GemMaxLevel         { get; private set; }
 
         // ─── 强化 ────────────────────────────────────────────
         public static ConfigEntry<bool>  FreeUpgrade         { get; private set; }
@@ -32,16 +32,16 @@ namespace DragonCliffMod
         {
             ForceStarChance     = config.Bind("装备", "强制星辰",     false, "所有装备必出星辰品质");
             EquipStatMultiplier = config.Bind("装备", "属性倍率",     1.0f,  "装备属性倍率（1=原版）");
-            MaxSockets          = config.Bind("装备", "最大打孔数",   10,    "装备最大打孔数（原版较少）");
+            MaxSockets          = config.Bind("装备", "最大打孔数",   10,    "装备最大打孔数（武器原版4/护甲3）");
 
-            GemLevelOverride    = config.Bind("宝石", "等级覆盖",     0,     "0=不覆盖, >0 强制宝石等级");
             GemStatMultiplier   = config.Bind("宝石", "属性倍率",     1.0f,  "宝石属性倍率（1=原版）");
+            GemMaxLevel         = config.Bind("宝石", "最大等级",     0,     "宝石等级上限（0=原版25）");
 
             FreeUpgrade         = config.Bind("强化", "免费强化",     false, "强化不消耗素材和金币");
             UpgradeSuccessRate  = config.Bind("强化", "成功率倍率",   1.0f,  "强化成功率倍率（1=原版）");
-            NoUpgradeCap        = config.Bind("强化", "取消等级上限", false, "取消强化等级上限");
+            NoUpgradeCap        = config.Bind("强化", "取消等级上限", false, "取消强化等级上限（原版100级）");
 
-            LevelCapOverride    = config.Bind("技能", "等级上限覆盖", 0,     "0=原版90级, >0 自定义上限");
+            LevelCapOverride    = config.Bind("技能", "等级上限覆盖", 0,     "英雄等级上限（0=原版90级，需反编译 firstpass）");
         }
     }
 }
