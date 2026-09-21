@@ -18,15 +18,29 @@ namespace DragonCliffMod.Patches
             __result = QualityGrade.Ancient;
         }
 
-        // ─── 必远古：指定品质入口 ──────────────────────────────
-        // DifficultyLevelMeasurement.GetItemGenerationQuality(QualityGrade grade, ...)
-        // 覆盖：合成(Combine) 等走指定品质的场景
+        // ─── 必远古：合成指定品质入口（只对 Combine 强制）──────
+        // DifficultyLevelMeasurement.GetItemGenerationQuality(QualityGrade grade, ResourceType, ResourceSourceType)
+        // 只对合成(Combine)强制远古，不污染掉落表(DungeonDrop)等其他场景
         [HarmonyPatch(typeof(DifficultyLevelMeasurement), "GetItemGenerationQuality")]
         [HarmonyPrefix]
-        static void ForceAncientGrade(ref QualityGrade grade)
+        static void ForceAncientGrade(ref QualityGrade grade, ResourceSourceType sourceType)
         {
             if (!ModConfig.ForceAncient.Value) return;
-            grade = QualityGrade.Ancient;
+            if (sourceType == ResourceSourceType.Combine)
+            {
+                grade = QualityGrade.Ancient;
+            }
+        }
+
+        // ─── 必星辰 ──────────────────────────────────────────────
+        // DifficultyLevelMeasurement.GetStarChance(ResourceSourceType) → double
+        // 教程做法：return 1.0，锻造出星辰装备（远古+特效）
+        [HarmonyPatch(typeof(DifficultyLevelMeasurement), "GetStarChance")]
+        [HarmonyPostfix]
+        static void ForceStar(ref double __result)
+        {
+            if (!ModConfig.ForceStarChance.Value) return;
+            __result = 1.0;
         }
 
         // ─── 装备属性倍率 ────────────────────────────────────────
