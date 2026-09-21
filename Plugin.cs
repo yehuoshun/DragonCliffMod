@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -35,6 +36,15 @@ namespace DragonCliffMod
                 var harmony = new HarmonyLib.Harmony(MyPluginInfo.PLUGIN_GUID);
                 harmony.PatchAll(typeof(Plugin).Assembly);
                 Logger.LogInfo("Harmony patch 全部注册完成");
+
+                // 诊断：实际 patch 了多少方法
+                var patched = harmony.GetPatchedMethods();
+                int count = patched.Count();
+                Logger.LogInfo("[诊断] 实际 patch 方法数 = " + count);
+                foreach (var m in patched)
+                {
+                    Logger.LogInfo("[诊断]   patched: " + m.DeclaringType.Name + "." + m.Name);
+                }
             }
             catch (Exception ex)
             {
