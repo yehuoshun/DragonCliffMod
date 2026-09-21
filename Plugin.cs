@@ -2,26 +2,37 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 
-namespace DragonCliffMod;
-
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-public class Plugin : BaseUnityPlugin
+namespace DragonCliffMod
 {
-    internal static ManualLogSource Log { get; private set; } = null!;
-
-    private void Awake()
+    public static class MyPluginInfo
     {
-        Log = Logger;
-        Logger.LogInfo($"龙崖 MOD 加载中... v{MyPluginInfo.PLUGIN_VERSION}");
+        public const string PLUGIN_GUID = "yehuoshun.DragonCliffMod";
+        public const string PLUGIN_NAME = "DragonCliffMod";
+        public const string PLUGIN_VERSION = "1.0.0";
+    }
 
-        try
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    public class Plugin : BaseUnityPlugin
+    {
+        internal static ManualLogSource Log { get; private set; }
+
+        private void Awake()
         {
-            Harmony.CreateAndPatchAll(typeof(Plugin).Assembly);
-            Logger.LogInfo("Harmony patch 全部注册完成");
-        }
-        catch (System.Exception ex)
-        {
-            Logger.LogError($"Harmony patch 注册失败: {ex.Message}");
+            Log = Logger;
+            Logger.LogInfo("龙崖 MOD 加载中... v" + MyPluginInfo.PLUGIN_VERSION);
+
+            // 绑定配置项（自动生成 BepInEx/config/yehuoshun.DragonCliffMod.cfg）
+            ModConfig.Initialize(Config);
+
+            try
+            {
+                Harmony.CreateAndPatchAll(typeof(Plugin).Assembly);
+                Logger.LogInfo("Harmony patch 全部注册完成");
+            }
+            catch (System.Exception ex)
+            {
+                Logger.LogError("Harmony patch 注册失败: " + ex);
+            }
         }
     }
 }

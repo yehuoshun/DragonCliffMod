@@ -5,69 +5,70 @@
 ## 环境要求
 
 - Windows（龙崖是 Windows 游戏）
-- [BepInEx 5](https://github.com/BepInEx/BepInEx/releases)（已部署到游戏目录）
-- .NET Framework 4.8 SDK（或 Visual Studio 2022+）
+- [BepInEx 5 **x86**](https://github.com/BepInEx/BepInEx/releases)（已部署到游戏目录，x64 版无法注入 32 位游戏）
+- .NET SDK（用于 `dotnet build`）
 - 龙崖 Steam 版
+
+> ⚠️ 龙崖是 **Unity 5.6.6 + .NET 3.5**（CLR 2.0.50727），插件必须 target **net35**，不要用 net48。
 
 ## 快速开始
 
-### 1. 安装 BepInEx
+### 1. 安装 BepInEx 5 x86
 
-1. 下载 [BepInEx_x64_5.4.22.0.zip](https://github.com/BepInEx/BepInEx/releases)
-2. 解压到龙崖游戏根目录（与 `Dragon Cliff.exe` 同级）
-3. 首次运行游戏，BepInEx 会自动初始化目录结构
-4. 确认 `BepInEx/LogOutput.log` 生成无报错
+1. 下载 `BepInEx_x86_5.4.22.0.zip`（**x86 不是 x64**）
+2. 解压到龙崖游戏根目录，使 `winhttp.dll` 与 `game.exe` 同级
+3. 启动一次游戏，确认 `BepInEx/LogOutput.log` 生成，出现 `CLR runtime version: 2.0.50727` 即注入成功
 
 ### 2. 编译插件
 
 ```bash
-# 克隆本仓库
 git clone https://github.com/yehuoshun/DragonCliffMod.git
 cd DragonCliffMod
 
-# 编译
+# 改 csproj 里的 DragonCliffDir 指向你的游戏目录（默认 F 盘）
+
 dotnet build -c Release
 ```
 
 ### 3. 部署
 
 ```bash
-# 复制 DLL 到 BepInEx 插件目录
-copy bin\Release\net48\DragonCliffMod.dll "Dragon Cliff\BepInEx\plugins\"
+copy bin\Release\net35\DragonCliffMod.dll "Dragon Cliff\BepInEx\plugins\"
 ```
 
 ### 4. 启动游戏
 
-BepInEx 自动加载插件，查看 `BepInEx/LogOutput.log` 确认加载成功。
+看 `BepInEx/LogOutput.log`，出现 `龙崖 MOD 加载中...` 即成功。
+
+配置项自动生成在 `BepInEx/config/yehuoshun.DragonCliffMod.cfg`。
 
 ## 项目结构
 
 ```
 DragonCliffMod/
-├── Plugin.cs                  # BepInEx 入口
-├── DragonCliffMod.csproj      # 项目文件
+├── Plugin.cs                  # BepInEx 入口（含 MyPluginInfo）
+├── DragonCliffMod.csproj      # net35 项目，引用游戏目录真实 DLL
 ├── Config/
 │   └── ModConfig.cs           # 插件配置入口
 ├── Patches/
-│   ├── EquipmentPatch.cs      # 装备相关 patch
-│   ├── GemPatch.cs            # 宝石相关 patch
-│   ├── EnhancementPatch.cs    # 强化相关 patch
-│   └── SkillPatch.cs          # 技能等级相关 patch
-└── Properties/
-    └── AssemblyInfo.cs
+│   ├── EquipmentPatch.cs      # 装备相关 patch（示例，默认禁用）
+│   ├── GemPatch.cs            # 宝石相关 patch（示例，默认禁用）
+│   ├── EnhancementPatch.cs    # 强化相关 patch（示例，默认禁用）
+│   └── SkillPatch.cs          # 技能等级相关 patch（示例，默认禁用）
+└── Utils/
+    └── Extensions.cs
 ```
 
 ## 添加新功能
 
-1. 在 `Patches/` 下新建 `XxxPatch.cs`
-2. 用 `[HarmonyPatch]` 标注目标类和方法
-3. 实现 `Prefix` / `Postfix` / `Transpiler`
-4. 编译部署测试
+1. 反编译 `Assembly-CSharp.dll` 拿到目标类名/方法名/namespace
+2. 在 `Patches/` 下新建或编辑 `XxxPatch.cs`
+3. 用 `[HarmonyPatch]` 标注目标类和方法，实现 `Prefix`/`Postfix`/`Transpiler`
+4. 把 `#if false` 改为 `#if true` 启用
+5. `dotnet build` → 部署 → 测试
 
-参考示例：详见各 Patches 目录下的 stub 文件。
+## 关键注意
 
-## 注意
-
-- 本插件需要引用龙崖的 `Assembly-CSharp.dll`（见 `.csproj` 中的 HintPath 占位）
-- 将 `.csproj` 中的 HintPath 改为你本地游戏路径
-- 也可通过 `BepInEx/Doorstop.dll` 自动装载，无需额外配置
+- **Unity 5.6.6 没有模块化 UnityEngine**，不能引用 `UnityEngine.Modules`，直接引用 `game_Data/Managed/UnityEngine.dll`
+- **存档序列化用 ZeroFormatter**（`ZeroFormatter.dll`），涉及存档字段的改动要格外小心
+- 所有 patch 默认 `#if false` 禁用，骨架本身能编译通过；逐个解开启用

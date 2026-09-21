@@ -1,37 +1,60 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <!-- 龙崖是 Unity 5.6.6 + .NET 3.5 (CLR 2.0.50727)，插件必须 target net35 -->
+    <TargetFramework>net35</TargetFramework>
+    <LangVersion>7.3</LangVersion>
     <AssemblyName>DragonCliffMod</AssemblyName>
-    <Description>龙崖 Dragon Cliff BepInEx 插件</Description>
+    <RootNamespace>DragonCliffMod</RootNamespace>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>12</LangVersion>
-    <RootNamespace>DragonCliffMod</RootNamespace>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <!-- 游戏根目录，改这一处即可（注意保留结尾无斜杠） -->
+    <DragonCliffDir>F:\Tool\steam\steamapps\common\Dragon Cliff</DragonCliffDir>
   </PropertyGroup>
 
-  <!-- BepInEx 依赖（NuGet 自动拉） -->
   <ItemGroup>
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
-    <PackageReference Include="UnityEngine.Modules" Version="2019.4.31" IncludeAssets="compile" />
-    <PackageReference Include="HarmonyX" Version="2.*" />
+    <!-- 让 dotnet build 在没有装 .NET Framework 3.5 开发包时也能编译 net35 -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
 
-  <!-- 龙崖游戏 DLL 引用 -->
-  <!-- ⚠️ 改为你本地的游戏路径 -->
+  <!-- BepInEx 核心（引用游戏目录自带，版本绝对匹配运行时） -->
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(DragonCliffDir)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(DragonCliffDir)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- 龙崖游戏 DLL -->
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Dragon Cliff\game_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(DragonCliffDir)\game_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(DragonCliffDir)\game_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Dragon Cliff\game_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(DragonCliffDir)\game_Data\Managed\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Dragon Cliff\game_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(DragonCliffDir)\game_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ZeroFormatter">
+      <HintPath>$(DragonCliffDir)\game_Data\Managed\ZeroFormatter.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ZeroFormatter.Interfaces">
+      <HintPath>$(DragonCliffDir)\game_Data\Managed\ZeroFormatter.Interfaces.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
