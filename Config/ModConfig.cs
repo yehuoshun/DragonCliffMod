@@ -30,7 +30,7 @@ namespace DragonCliffMod
         /// </summary>
         public static void Initialize(ConfigFile config)
         {
-            ForceStarChance     = config.Bind("装备", "强制星辰",     false, "所有装备必出星辰品质");
+            ForceStarChance     = config.Bind("装备", "强制星辰",     true,  "所有装备必出星辰品质");
             EquipStatMultiplier = config.Bind("装备", "属性倍率",     1.0f,  "装备属性倍率（1=原版）");
             MaxSockets          = config.Bind("装备", "最大打孔数",   0,     "装备最大打孔数（0=原版4/3，>0自定义）");
 
