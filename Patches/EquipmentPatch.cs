@@ -7,6 +7,17 @@ namespace DragonCliffMod.Patches
     /// </summary>
     public static class EquipmentPatch
     {
+        // ─── 必远古 ──────────────────────────────────────────────
+        // GenerationDistribution.GetGrade() → QualityGrade
+        // 星辰的前提是远古品质，先保证必远古，必星辰才能生效
+        [HarmonyPatch(typeof(GenerationDistribution), "GetGrade")]
+        [HarmonyPostfix]
+        static void ForceAncient(ref QualityGrade __result)
+        {
+            if (!ModConfig.ForceAncient.Value) return;
+            __result = QualityGrade.Ancient;
+        }
+
         // ─── 必星辰 ──────────────────────────────────────────────
         // DifficultyLevelMeasurement.GetStarChance(ResourceSourceType) → double
         [HarmonyPatch(typeof(DifficultyLevelMeasurement), "GetStarChance")]
