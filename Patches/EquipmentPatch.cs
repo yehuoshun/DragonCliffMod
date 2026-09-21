@@ -29,16 +29,6 @@ namespace DragonCliffMod.Patches
             grade = QualityGrade.Ancient;
         }
 
-        // ─── 必星辰 ──────────────────────────────────────────────
-        // DifficultyLevelMeasurement.GetStarChance(ResourceSourceType) → double
-        [HarmonyPatch(typeof(DifficultyLevelMeasurement), "GetStarChance")]
-        [HarmonyPostfix]
-        static void ForceStar(ref double __result)
-        {
-            if (!ModConfig.ForceStarChance.Value) return;
-            __result = 1.0;
-        }
-
         // ─── 装备属性倍率 ────────────────────────────────────────
         // AttributePotentialDescriptor.GetMean(ItemRoot, AttributeGrade) → double
         [HarmonyPatch(typeof(AttributePotentialDescriptor), "GetMean")]

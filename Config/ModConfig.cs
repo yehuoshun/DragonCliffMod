@@ -9,7 +9,6 @@ namespace DragonCliffMod
     public static class ModConfig
     {
         // ─── 装备 ────────────────────────────────────────────
-        public static ConfigEntry<bool>  ForceStarChance     { get; private set; }
         public static ConfigEntry<bool>  ForceAncient        { get; private set; }
         public static ConfigEntry<float> EquipStatMultiplier { get; private set; }
         public static ConfigEntry<int>   MaxSockets          { get; private set; }
@@ -35,7 +34,6 @@ namespace DragonCliffMod
         /// </summary>
         public static void Initialize(ConfigFile config)
         {
-            ForceStarChance     = config.Bind("装备", "强制星辰",     true,  "所有装备必出星辰品质");
             ForceAncient        = config.Bind("装备", "必远古",       true,  "所有装备必出远古品质");
             EquipStatMultiplier = config.Bind("装备", "属性倍率",     1.0f,  "装备属性倍率（1=原版）");
             MaxSockets          = config.Bind("装备", "最大打孔数",   0,     "装备最大打孔数（0=原版4/3，>0自定义）");
