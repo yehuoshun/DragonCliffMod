@@ -58,12 +58,12 @@ namespace DragonCliffMod
                     if (f != null)
                     {
                         f.SetValue(null, maxGem);
-                        Logger.LogInfo("宝石等级上限已改为 " + maxGem);
+                        Log.LogInfo("宝石等级上限已改为 " + maxGem);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("修改 MaxGemLevel 失败: " + ex);
+                    Log.LogError("修改 MaxGemLevel 失败: " + ex);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace DragonCliffMod
                     BindingFlags.Public | BindingFlags.Static);
                 if (capField == null)
                 {
-                    Logger.LogError("找不到 UnitExtensions.MaxAdventurerLevel 字段");
+                    Log.LogError("找不到 UnitExtensions.MaxAdventurerLevel 字段");
                     return;
                 }
                 capField.SetValue(null, cap);
@@ -128,11 +128,11 @@ namespace DragonCliffMod
                     num4 += num; // 下一级 FromExp = 本级 ToExp + 1
                 }
 
-                Logger.LogInfo("英雄等级上限已改为 " + cap + "，经验表扩展到 " + target + " 级");
+                Log.LogInfo("英雄等级上限已改为 " + cap + "，经验表扩展到 " + target + " 级");
             }
             catch (Exception ex)
             {
-                Logger.LogError("修改等级上限失败: " + ex);
+                Log.LogError("修改等级上限失败: " + ex);
             }
         }
 
