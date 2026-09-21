@@ -14,8 +14,8 @@ namespace DragonCliffMod.Patches
         [HarmonyPostfix]
         static void ForceAncient(ref QualityGrade __result)
         {
+            Plugin.Log.LogInfo("[诊断] GetGrade 被调用！ForceAncient=" + ModConfig.ForceAncient.Value + "，原结果=" + __result);
             if (!ModConfig.ForceAncient.Value) return;
-            Plugin.Log.LogInfo("[诊断] GetGrade 被调用，原结果=" + __result);
             __result = QualityGrade.Ancient;
         }
 
@@ -26,8 +26,8 @@ namespace DragonCliffMod.Patches
         [HarmonyPostfix]
         static void ForceStar(ref double __result)
         {
+            Plugin.Log.LogInfo("[诊断] GetStarChance 被调用！ForceStarChance=" + ModConfig.ForceStarChance.Value + "，原结果=" + __result);
             if (!ModConfig.ForceStarChance.Value) return;
-            Plugin.Log.LogInfo("[诊断] GetStarChance 被调用，原结果=" + __result);
             __result = 1.0;
         }
 
